@@ -169,3 +169,5 @@ channels.txt
 poetry.lock
 pyproject.toml
 replit.nix
+example.env
+example.env
