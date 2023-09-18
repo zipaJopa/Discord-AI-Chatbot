@@ -3,6 +3,8 @@ import os
 def detect_replit():
     if "REPL_OWNER" in os.environ:
         return True
+    if "WEB_SERVER" in os.environ:
+        return True
     return False
 
 if __name__ == "__main__":
