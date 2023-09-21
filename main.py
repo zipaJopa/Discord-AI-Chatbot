@@ -158,22 +158,16 @@ async def on_message(message):
             await message.add_reaction("🔎")
         channel_id = message.channel.id
         key = f"{message.author.id}-{channel_id}"
-
-        if key not in message_history:
-            message_history[key] = []
-
-        message_history[key] = message_history[key][-MAX_HISTORY:]
             
         search_results = await search(message.content)
             
-        message_history[key].append({"role": "user", "content": message.content})
-        history = message_history[key]
+        user_input = {"id": key, "name": message.author.global_name, "message": message.content}
 
         async with message.channel.typing():
-            response = await asyncio.to_thread(generate_response, instructions=instructions, search=search_results, history=history)
+            print(user_input)
+            response = await asyncio.to_thread(generate_response, instructions=instructions, search=search_results, user_input=user_input)
             if internet_access:
                 await message.remove_reaction("🔎", bot.user)
-        message_history[key].append({"role": "assistant", "name": personaname, "content": response})
 
         if response is not None:
             for chunk in split_response(response):

@@ -12,12 +12,27 @@ import openai
 import os
 from dotenv import load_dotenv
 
+from langchain.agents import initialize_agent, AgentType, Tool
+from langchain.chains import LLMMathChain
+from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
+from langchain.prompts import MessagesPlaceholder
+from langchain.schema import SystemMessage
+from langchain.memory import ConversationBufferWindowMemory
+
+from dotenv import find_dotenv, load_dotenv
+import openai
+import os
+
+
+load_dotenv(find_dotenv())
+openai.api_key = os.getenv("OPENAI_API_KEY")
 load_dotenv()
 current_language = load_current_language()
 internet_access = config['INTERNET_ACCESS']
 
-openai.api_key = os.getenv('CHIMERA_GPT_KEY')
-openai.api_base = "https://api.naga.ac/v1"
+# openai.api_key = os.getenv('CHIMERA_GPT_KEY')
+# openai.api_base = "https://api.naga.ac/v1"
 def sdxl(prompt):
     response = openai.Image.create(
     model="sdxl",
@@ -79,7 +94,61 @@ async def search(prompt):
 async def fetch_models():
     return openai.Model.list()
     
-def generate_response(instructions, search, history):
+agents = {}
+
+def create_agent(id, instructions):
+    system_message = SystemMessage(
+        content=instructions
+    )
+
+    agent_kwargs = {
+        "extra_prompt_messages": [MessagesPlaceholder(variable_name="memory")],
+        "system_message": system_message,
+    }
+
+    memory = ConversationBufferWindowMemory(memory_key="memory", return_messages=True)
+
+    llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+    llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
+    tools = [        
+        Tool(
+            name="Calculator",
+            func=llm_math_chain.run,
+            description="useful for when you need to answer questions about math"
+        ),        
+    ]
+    
+
+    agent = initialize_agent(
+        tools, 
+        llm, 
+        agent=AgentType.OPENAI_FUNCTIONS,
+        verbose=True,
+        agent_kwargs=agent_kwargs,
+        memory=memory
+    )
+
+    agents[id] = agent
+    
+    return agent
+
+def generate_response(instructions, search, user_input):   
+    id = user_input["id"]
+    message = user_input["message"]
+
+    if id not in agents:
+        agent = create_agent(id, instructions)
+        message = "I'm " + user_input["name"] + ". " + message
+    else:
+        agent = agents[id]
+    
+    print(message)
+    response = agent.run(message)
+
+    return response
+
+
+def generate_response_old(instructions, search, history):
     if search is not None:
         search_results = search
     elif search is None:
@@ -95,6 +164,7 @@ def generate_response(instructions, search, history):
     )
     message = response.choices[0].message.content
     return message
+
 
 def generate_gpt4_response(prompt):
     messages = [
