@@ -14,7 +14,7 @@ from discord import Embed, app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from bot_utilities.ai_utils import generate_response, generate_image_prodia, search, poly_image_gen, generate_gpt4_response, dall_e_gen, sdxl
+from bot_utilities.ai_utils import generate_response, generate_image_prodia, poly_image_gen, generate_gpt4_response, dall_e_gen, sdxl
 from bot_utilities.response_util import split_response, translate_to_en, get_random_prompt
 from bot_utilities.discord_util import check_token, get_discord_token
 from bot_utilities.config_loader import config, load_current_language, load_instructions
@@ -159,13 +159,11 @@ async def on_message(message):
         channel_id = message.channel.id
         key = f"{message.author.id}-{channel_id}"
             
-        search_results = await search(message.content)
-            
         user_input = {"id": key, "name": message.author.global_name, "message": message.content}
 
         async with message.channel.typing():
             print(user_input)
-            response = await asyncio.to_thread(generate_response, instructions=instructions, search=search_results, user_input=user_input)
+            response = await asyncio.to_thread(generate_response, instructions=instructions, user_input=user_input)
             if internet_access:
                 await message.remove_reaction("🔎", bot.user)
 
