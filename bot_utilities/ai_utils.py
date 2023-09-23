@@ -223,8 +223,7 @@ def trigger_github_weekly_trending_repo_scrape():
     url = "https://api.browse.ai/v2/robots/0c0f94bf-207a-4660-8ade-238cd778bb25/tasks"
 
     payload = {"inputParameters": 
-               {"originUrl": "https://github.com/trending",
-                "weekly_trending_github_repo_limit": 10}
+               {"originUrl": "https://github.com/trending"}
             }
     headers = {"Authorization": "Bearer ec2cc08b-3343-47c9-9dd3-dc5d40d4aa3b:dead067b-d485-496d-a3e0-4902339f6cfe"}
 
@@ -275,7 +274,7 @@ def filter_ai_github_repos(repos):
     can you help me filter out ones that is related to AI, knowledge graph, computer vision, large language model?
 
     The report should be in certain format:
-    "🚀 Weekly trending AI projects:
+    "🚀 Daily trending AI projects:
 
     **coqui-ai / TTS**
     - 🌟 3,952 stars this week | 18,952 total stars
@@ -288,6 +287,8 @@ def filter_ai_github_repos(repos):
     - 🌐 https://github.com/yoheinakajima/instagraph
 
     ...."
+
+    if there is no any relevant repo, you can just say "Looks like no new interesting AI project today, let me know if I missed any pls!"
     """
     prompt = ChatPromptTemplate.from_template(prompt_template)
 

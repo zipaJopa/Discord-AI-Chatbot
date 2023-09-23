@@ -528,7 +528,7 @@ async def server(ctx):
 
 
 # Define the scheduler task
-@tasks.loop(hours=24)  # Run the task every minute
+@tasks.loop(hours=48)  # Run the task every minute
 async def scheduler():
     current_time = datetime.datetime.now()
     print(current_time, "; hour is: ", current_time.hour)
