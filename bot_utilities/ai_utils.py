@@ -1,16 +1,13 @@
 import aiohttp
 import io
 from datetime import datetime
-import re
-import asyncio
 import time
 import random
-import asyncio
 from urllib.parse import quote
 from bot_utilities.config_loader import load_current_language, config
 import openai
 import os
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 import json
 
 from langchain.agents import initialize_agent, AgentType, Tool
@@ -24,14 +21,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain import PromptTemplate
 from bs4 import BeautifulSoup
-from langchain.tools import BaseTool
-from pydantic import BaseModel, Field
-from typing import Type
+from pydantic import Field
 from langchain.prompts import ChatPromptTemplate
-
-from dotenv import find_dotenv, load_dotenv
-import openai
-import os
 import requests
 
 
@@ -252,14 +243,8 @@ def get_github_weekly_trending_repo():
         # print(response)
         if response["statusCode"] == 200:
             if response["result"]["status"] == "successful":
-                repos = response["result"]["capturedLists"]["weekly trending github repo"]
-                processed_repos = []
-                for repo in repos:
-                    status = repo.get("_STATUS")
-                    if status != "REMOVED":
-                        # Return everything except _STATUS
-                        processed_repos.append(repo)                    
-                return processed_repos
+                repos = response["result"]["capturedLists"]
+                return repos                                 
             elif response["result"]["status"] == "failed":
                 return "failed to get data"
         elif response["statusCode"] in {400, 401, 403, 404, 500, 503}:
