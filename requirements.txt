@@ -13,3 +13,4 @@ python-docx
 tqdm
 fake-useragent
 openai
+langchain
