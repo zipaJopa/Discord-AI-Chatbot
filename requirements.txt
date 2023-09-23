@@ -14,3 +14,4 @@ tqdm
 fake-useragent
 openai
 langchain
+bs4
