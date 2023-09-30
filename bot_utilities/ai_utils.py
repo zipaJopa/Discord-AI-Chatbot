@@ -138,21 +138,19 @@ def search(query):
         None
     """
 
-    endpoint = "https://ddg-api.herokuapp.com/search"
-    params = {
-        'query': query,  # Replace with your search query
-        'limit': 5  # Replace with your desired limit
-    }
-    
-    # Make the GET request
-    response = requests.get(endpoint, params=params)
+    url = "https://google.serper.dev/search"
 
-    # Check if the request was successful
-    if response.status_code == 200:
-        results = response.json()
-        return results
-    else:
-        return (f"Didn't get any results")
+    payload = json.dumps({
+        "q": query
+    })
+    headers = {
+        'X-API-KEY': 'ab179d0f00ae0bafe47f77e09e62b9f53b3f281d',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return response.json()
 
 
 
