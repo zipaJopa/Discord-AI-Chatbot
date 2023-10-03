@@ -108,7 +108,7 @@ def scrape_website(url: str):
     data_json = json.dumps(data)
 
     # Send the POST request
-    response = requests.post("https://chrome.browserless.io/content?token=2db344e9-a08a-4179-8f48-195a2f7ea6ee", headers=headers, data=data_json)
+    response = requests.post("https://chrome.browserless.io/content?token=0a049e5b-3387-4c51-ab6c-57647d519571", headers=headers, data=data_json)
     
     # Check the response status code
     if response.status_code == 200:
